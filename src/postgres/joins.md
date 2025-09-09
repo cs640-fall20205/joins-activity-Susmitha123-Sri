@@ -30,9 +30,12 @@ Able to...
 
 Questions
 
-1. Which customers have matching orders?  
-2. Which customers do not have any orders?  
-3. Which orders do not match any existing customers?  
+1. Which customers have matching orders?
+    c1 c2
+2. Which customers do not have any orders?
+    c3 c4
+3. Which orders do not match any existing customers?
+    c5 c6
 
 ---
 
@@ -55,11 +58,17 @@ Result
 Questions
 
 1. Which customers are not included in the result?
+    c3 c4
 2. Why do you think they are not in the result?
+   Because inner join only returns rows where there is a match in both tables
 3. Which orders are not included in the result?
+   c5 c6
 4. Why do you think they are not in the result?
+   They do not exist in the customer tables
 5. When is a row from Customers or Orders included?
+   Its when the customer_id exists in both customers and orders
 6. What is the meaning of INNER JOIN?
+   Inner join returns only the rows that have matching values in both tables, excluding non-matching rows from either side.
 
 ---
 
@@ -84,9 +93,13 @@ Result
 Questions
 
 1. Which customers are not included in the result?
+   All are included
 2. Which orders are not included in the result?
+   o3 o4
 3. When is a row included?
+   A row is included for every customer from the Customers table, regardless of whether they have orders or not.
 4. What is the meaning of LEFT OUTER JOIN?
+   LEFT OUTER JOIN returns all records from the left table (Customers), and the matched records from the right table (Orders). If there is no match, the result will contain NULL values for the right table columns.
 
 ---
 
