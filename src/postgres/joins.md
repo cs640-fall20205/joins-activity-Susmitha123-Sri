@@ -95,11 +95,11 @@ Questions
 1. Which customers are not included in the result?
    All are included
 2. Which orders are not included in the result?
-   o3 o4
+    o5 o6 or orders without a valid customer_id are not included.
 3. When is a row included?
-   A row is included for every customer from the Customers table, regardless of whether they have orders or not.
+   A row is included if there is a customer id in the Customers table
 4. What is the meaning of LEFT OUTER JOIN?
-   LEFT OUTER JOIN returns all records from the left table (Customers), and the matched records from the right table (Orders). If there is no match, the result will contain NULL values for the right table columns.
+   A LEFT OUTER JOIN returns all rows from the left table (Customers) and the matching rows from the right table (Orders).
 
 ---
 
@@ -125,9 +125,13 @@ Result
 Questions
 
 1. Which customers are not included in the result?
+   c3 c4
 2. Which orders are not included in the result?
+    This is a RIGHT OUTER JOIN, meaning all orders from the Orders table are included, even if they don’t have a matching customer.
 3. When is a row included?
+   A row is included if it exists in the table.
 4. What is the meaning of RIGHT OUTER JOIN?
+   A RIGHT OUTER JOIN returns all rows from the right table (Orders) and the matching rows from the left table
 
 ---
 
@@ -154,9 +158,13 @@ Result
 Questions
 
 1. Which customers are not included in the result?
+   All are included
 2. Which orders are not included in the result?
+   All orders are included
 3. When is a row included?
+   If a customer or an order is included in the customers or the orders table respectively
 4. What is the meaning of FULL JOIN?
+   FULL JOIN returns all rows from both tables.
 
 ---
 
@@ -165,5 +173,53 @@ Questions
 Confirm the above by creating the tables in Postgres and running the queries. Paste the SQL for creating and populating the tables below.
 
 ```sql
+-- Clean start
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS customers;
+
+-- 1) Tables
+CREATE TABLE customers (
+  customer_id  TEXT PRIMARY KEY,
+  customer_name TEXT NOT NULL
+);
+
+CREATE TABLE orders (
+  order_id     TEXT PRIMARY KEY,
+  customer_id  TEXT  -- allow NULL so we can have orders with no customer
+);
+
+-- 2) Sample data
+INSERT INTO customers (customer_id, customer_name) VALUES
+  ('c1','Alice'),
+  ('c2','Bob'),
+  ('c3','Carol'),
+  ('c4','David');
+
+-- o5 and o6 have no matching customer to demonstrate RIGHT/FULL joins
+INSERT INTO orders (order_id, customer_id) VALUES
+  ('o1','c1'),
+  ('o2','c2'),
+  ('o5',NULL),
+  ('o6',NULL);
+
+-- 3) Confirm the joins
+
+-- LEFT OUTER JOIN (all customers; orders if present)
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id, o.order_id;
+
+-- RIGHT OUTER JOIN (all orders; customers if present)
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM customers c
+RIGHT JOIN orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id NULLS LAST, o.order_id;
+
+-- FULL OUTER JOIN (all customers + all orders)
+SELECT c.customer_id, c.customer_name, o.order_id
+FROM customers c
+FULL JOIN orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id NULLS LAST, o.order_id;
 
 ```
